@@ -1,7 +1,6 @@
 #pragma once
 #include "Matrices.h"
 #include <SFML/Graphics.hpp>
-#include <ctime>
 
 #define M_PI 3.1415926535897932384626433
 const float G = 1000;      //Gravity
