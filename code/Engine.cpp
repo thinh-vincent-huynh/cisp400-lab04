@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "Particle.h"
 
+bool wait = false;
 
 Engine::Engine() {
     VideoMode desktop = VideoMode::getDesktopMode(); // res
@@ -26,6 +27,9 @@ void Engine::input() {
             (event.type == Event::KeyPressed && event.key.code == Keyboard::Escape)) {
             m_Window.close(); // closing if "esc" or closed by top right X
         }
+        if (event.type == Event::KeyPressed && event.key.code == Keyboard::Space) {
+            wait = !wait;
+        }
         if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
             Vector2i mouseClick = Mouse::getPosition(m_Window); // Get mouse click position relative to the window.
             for (int i = 0; i < 5; ++i) {
@@ -38,13 +42,15 @@ void Engine::input() {
 
 // Updates all active particles, removing expired ones.
 void Engine::update(float dtAsSeconds) {
-    for (auto it = m_particles.begin(); it != m_particles.end(); ) {
-        if (it->getTTL() > 0.0f) {
-            it->update(dtAsSeconds); // update the particles state based on elapsed time
-            ++it; 
-        }
-        else {
-            it = m_particles.erase(it); // remove particles whose time-to-live (TTL) has expired
+    if(!wait){
+        for (auto it = m_particles.begin(); it != m_particles.end(); ) {
+            if (it->getTTL() > 0.0f) {
+                it->update(dtAsSeconds); // update the particles state based on elapsed time
+                ++it; 
+            }
+            else {
+                it = m_particles.erase(it); // remove particles whose time-to-live (TTL) has expired
+            }
         }
     }
 }
