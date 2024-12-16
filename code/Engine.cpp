@@ -8,15 +8,16 @@ Image image;
 Texture texture;
 
 SoundBuffer buffer; // stores sounds
-Sound fireworkSE; //SE = sound effect
+Sound fireworkSound;
 
 vector<Sprite> fireworks; // vector of firework sprites
 vector<float> fireworkTargets; // vector of respective target y positions
 vector<vector<Particle>> particleGroups; // group particles per firework
 
+//vector<Sound> fireworkSounds; // separate sounds for each firework
 
 bool wait = false; // pause flag
-float target;
+float target, ratio;
 
 // Firework and Sound are free commons
 
@@ -26,13 +27,12 @@ Engine::Engine() {
 
     image.loadFromFile("firework1.png"); // load firework image 
     texture.loadFromImage(image); // load texture from image
-    
+
     if (!buffer.loadFromFile("fireworkSE.wav")) {
-        std::cerr << "Error: Could not load sound file." << std::endl;
+        cerr << "Error: Could not load sound file." << std::endl;
     }
-    fireworkSE.setBuffer(buffer);
-    fireworkSE.setVolume(100.f);
- 
+    fireworkSound.setBuffer(buffer);
+    fireworkSound.setVolume(80.f);
 
 }
 
@@ -63,7 +63,8 @@ void Engine::input() {
 
         //user's input (mouse click) for firework and particle pos
         if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left) {
-            
+
+
             // create a new firework sprite at the clicked position
             Vector2i mouseClick = Mouse::getPosition(m_Window);
 
@@ -76,10 +77,13 @@ void Engine::input() {
             fireworks.push_back(newFirework);
             fireworkTargets.push_back(mouseClick.y - 105);//105 bc its kinda in the middle of sprite (firework)
 
-            fireworkSE.play();
-            //float ratio = (VideoMode::getDesktopMode().height - mouseClick.y) / static_cast<float>(VideoMode::getDesktopMode().height);
-            //fireworkSE.setPitch(0.5f + ratio * 1.5f); // Pitch range [0.5, 2.0]
-         
+            // create a new sound instance for this firework
+
+            ratio = (VideoMode::getDesktopMode().height + mouseClick.y) / static_cast<float>(VideoMode::getDesktopMode().height);
+            fireworkSound.setPitch(0.7f + ratio * 2.5f);
+            fireworkSound.play();
+
+           // fireworkSounds.push_back(fireworkSound);
 
             // generate particles at the clicked position and group them
             vector<Particle> newParticleGroup; //for each firework made will havea group so its not doesn't effect others
@@ -87,6 +91,7 @@ void Engine::input() {
             for (int i = 0; i < 5; ++i) {
                 newParticleGroup.emplace_back(m_Window, rand() % 26 + 25, mouseClick);
             }
+
             particleGroups.push_back(newParticleGroup);
         }
     }
@@ -104,8 +109,8 @@ void Engine::update(float dtAsSeconds) {
             //case being over user's y value with firework's y value
             if (fireworks[i].getPosition().y < fireworkTargets[i]) {
                 fireworkTargets[i] = -target; // mark target as triggered
+
                 fireworks[i].setPosition(-9999, 9999); // idk how to remove it so put it away somewhere far lol
-                //it = fireworks.erase(it); //removes it
                 ++i;
             }
             else {
@@ -132,9 +137,10 @@ void Engine::update(float dtAsSeconds) {
 // renders everything
 void Engine::draw() {
     m_Window.clear();
-    
+
     // draw all active fireworks
     for (const auto& firework : fireworks) {
+
         m_Window.draw(firework);
     }
 
