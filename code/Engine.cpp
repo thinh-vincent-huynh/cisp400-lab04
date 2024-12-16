@@ -27,7 +27,7 @@ Engine::Engine() {
     image.loadFromFile("firework1.png"); // load firework image 
     texture.loadFromImage(image); // load texture from image
     
-    if (!buffer.loadFromFile("fireworkSE.mp3")) {
+    if (!buffer.loadFromFile("fireworkSE.wav")) {
         std::cerr << "Error: Could not load sound file." << std::endl;
     }
     fireworkSE.setBuffer(buffer);
