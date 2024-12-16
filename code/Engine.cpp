@@ -104,7 +104,6 @@ void Engine::update(float dtAsSeconds) {
             //case being over user's y value with firework's y value
             if (fireworks[i].getPosition().y < fireworkTargets[i]) {
                 fireworkTargets[i] = -target; // mark target as triggered
-                fireworkSE.play();
                 fireworks[i].setPosition(-9999, 9999); // idk how to remove it so put it away somewhere far lol
                 //it = fireworks.erase(it); //removes it
                 ++i;
